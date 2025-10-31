@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pichau Checker - Interface v2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a0000 0%, #330000 50%, #1a0000 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #ff0000;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(255,0,0,0.3);
+            margin-bottom: 20px;
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .input-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #ff3333;
+            font-size: 1.1rem;
+        }
+
+        .input-section textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            transition: border-color 0.3s;
+            background: #0d0d0d;
+            color: #ff3333;
+        }
+
+        .input-section textarea:focus {
+            outline: none;
+            border-color: #ff3333;
+            box-shadow: 0 0 10px rgba(255,0,0,0.5);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            color: white;
+            border: 1px solid #ff3333;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.6);
+            background: linear-gradient(135deg, #ff3333 0%, #ff0000 100%);
+        }
+
+        .btn-secondary {
+            background: #2a2a2a;
+            color: #ff3333;
+            border: 1px solid #ff0000;
+        }
+
+        .btn-secondary:hover {
+            background: #3a3a3a;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #330000 0%, #660000 100%);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            text-align: center;
+            border: 1px solid #ff0000;
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #003300 0%, #006600 100%);
+            border: 1px solid #00ff00;
+        }
+
+        .stat-card.error {
+            background: linear-gradient(135deg, #660000 0%, #990000 100%);
+            border: 1px solid #ff3333;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .result-section {
+            background: #1a1a1a;
+            border: 1px solid #ff0000;
+            border-radius: 10px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .result-section h2 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-section.approved h2 {
+            color: #28a745;
+        }
+
+        .result-section.rejected h2 {
+            color: #dc3545;
+        }
+
+        .result-item {
+            background: #0d0d0d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+            animation: slideIn 0.3s ease;
+        }
+
+        .result-item.approved {
+            border-left-color: #28a745;
+        }
+
+        .result-item.rejected {
+            border-left-color: #dc3545;
+        }
+
+        .result-item .email {
+            font-weight: 600;
+            color: #ff3333;
+            margin-bottom: 5px;
+        }
+
+        .result-item .info {
+            font-size: 0.9rem;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #ff3333;
+            font-weight: 600;
+        }
+
+        .spinner {
+            border: 3px solid #330000;
+            border-top: 3px solid #ff0000;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .results {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            background: #1a1a1a;
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            min-width: 300px;
+            box-shadow: 0 5px 20px rgba(255, 0, 0, 0.5);
+            animation: slideInRight 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.success {
+            border-color: #00ff00;
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .toast.error {
+            border-color: #ff3333;
+            box-shadow: 0 5px 20px rgba(255, 51, 51, 0.5);
+        }
+
+        .toast-icon {
+            font-size: 1.5rem;
+        }
+
+        .toast-content {
+            flex: 1;
+            color: white;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .toast-message {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            
+           
+        </div>
+
+        <div class="card">
+            <div class="input-section">
+                <label for="accounts">📝 Cole suas contas aqui (email:senha ou email|senha)</label>
+                <textarea 
+                    id="accounts" 
+                    placeholder="exemplo@email.com:senha123&#10;outro@email.com|senha456&#10;teste@email.com:senha789"
+                ></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="startCheck()" id="checkBtn">
+                    🚀 Iniciar Verificação
+                </button>
+                <button class="btn btn-secondary" onclick="stopCheck()" id="stopBtn" style="display: none;">
+                    ⏹️ Parar Verificação
+                </button>
+                <button class="btn btn-secondary" onclick="clearAll()" id="clearBtn">
+                    🗑️ Limpar Tudo
+                </button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3 id="totalCount">0</h3>
+                <p>Total</p>
+            </div>
+            <div class="stat-card success">
+                <h3 id="approvedCount">0</h3>
+                <p>✅ Aprovadas</p>
+            </div>
+            <div class="stat-card error">
+                <h3 id="rejectedCount">0</h3>
+                <p>❌ Reprovadas</p>
+            </div>
+        </div>
+
+        <div id="loadingSection" class="card" style="display: none;">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p id="loadingText">Verificando contas...</p>
+            </div>
+        </div>
+
+        <div class="results">
+            <div class="result-section approved">
+                <h2>✅ Aprovadas</h2>
+                <div id="approvedList">
+                    <div class="empty-state">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                        </svg>
+                        <p>Nenhuma conta aprovada ainda</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-section rejected">
+                <h2>❌ Reprovadas</h2>
+                <div id="rejectedList">
+                    <div class="empty-state">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/>
+                        </svg>
+                        <p>Nenhuma conta reprovada ainda</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        let approved = [];
+        let rejected = [];
+        let checking = false;
+        let shouldStop = false;
+
+        // Toast System
+        function showToast(title, message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icon}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        async function startCheck() {
+            if (checking) return;
+
+            const textarea = document.getElementById('accounts');
+            const accounts = textarea.value.trim().split('\n').filter(line => line.trim());
+
+            if (accounts.length === 0) {
+                showToast('Erro', 'Por favor, adicione pelo menos uma conta!', 'error');
+                return;
+            }
+
+            checking = true;
+            shouldStop = false;
+            document.getElementById('checkBtn').style.display = 'none';
+            document.getElementById('stopBtn').style.display = 'block';
+            document.getElementById('clearBtn').disabled = true;
+            document.getElementById('loadingSection').style.display = 'block';
+            document.getElementById('totalCount').textContent = accounts.length;
+            
+            showToast('Iniciado', `Verificando ${accounts.length} contas...`, 'info');
+
+            for (let i = 0; i < accounts.length; i++) {
+                if (shouldStop) {
+                    showToast('Parado', `Verificação interrompida. ${i} de ${accounts.length} verificadas`, 'info');
+                    break;
+                }
+                
+                const account = accounts[i].trim();
+                document.getElementById('loadingText').textContent = 
+                    `Verificando ${i + 1}/${accounts.length}: ${account.split(/[:|\;\/]/)[0]}`;
+
+                await checkAccount(account);
+                
+                // Remove a conta verificada do textarea
+                const remainingAccounts = accounts.slice(i + 1);
+                textarea.value = remainingAccounts.join('\n');
+            }
+
+            checking = false;
+            shouldStop = false;
+            document.getElementById('checkBtn').style.display = 'block';
+            document.getElementById('stopBtn').style.display = 'none';
+            document.getElementById('clearBtn').disabled = false;
+            document.getElementById('loadingSection').style.display = 'none';
+            
+            if (!shouldStop) {
+                showToast('Concluído', `${approved.length} aprovadas, ${rejected.length} reprovadas`, 'success');
+            }
+        }
+        
+        function stopCheck() {
+            shouldStop = true;
+            showToast('Parando', 'Aguarde a verificação atual terminar...', 'info');
+        }
+
+        async function checkAccount(account) {
+            try {
+                const response = await fetch(`api_checker.php?lista=${encodeURIComponent(account)}`);
+                const html = await response.text();
+
+                // Verifica se realmente aprovou ou reprovou
+                const isApproved = html.includes('✅ APROVADA') && html.includes('lime');
+                const isRejected = html.includes('❌ REPROVADA') && html.includes('red');
+                
+                const email = account.split(/[:|\;\/]/)[0];
+                const password = account.split(/[:|\;\/]/)[1];
+
+                // Extrai informações extras se houver
+                let info = '';
+                const infoMatch = html.match(/ℹ️ Info: (.*?)<br>/);
+                if (infoMatch) {
+                    info = infoMatch[1].trim();
+                }
+
+                if (isApproved) {
+                    approved.push({ email, password, info });
+                    addToList('approvedList', email, password, info, 'approved');
+                    showToast('Aprovada', email, 'success');
+                } else if (isRejected) {
+                    rejected.push({ email, password });
+                    addToList('rejectedList', email, password, '', 'rejected');
+                    showToast('Reprovada', email, 'error');
+                } else {
+                    rejected.push({ email, password });
+                    addToList('rejectedList', email, password, 'Erro na verificação', 'rejected');
+                    showToast('Erro', email, 'error');
+                }
+
+                updateStats();
+            } catch (error) {
+                const email = account.split(/[:|\;\/]/)[0];
+                const password = account.split(/[:|\;\/]/)[1];
+                rejected.push({ email, password });
+                addToList('rejectedList', email, password, 'Erro na verificação', 'rejected');
+                showToast('Erro', email, 'error');
+                updateStats();
+            }
+        }
+
+        function addToList(listId, email, password, info, type) {
+            const list = document.getElementById(listId);
+            
+            // Remove empty state
+            const emptyState = list.querySelector('.empty-state');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            const item = document.createElement('div');
+            item.className = `result-item ${type}`;
+            item.innerHTML = `
+                <div class="email">${email}</div>
+                <div class="info">🔑 ${password}</div>
+                ${info ? `<div class="info">ℹ️ ${info}</div>` : ''}
+            `;
+            list.appendChild(item);
+        }
+
+        function updateStats() {
+            document.getElementById('approvedCount').textContent = approved.length;
+            document.getElementById('rejectedCount').textContent = rejected.length;
+        }
+
+        function clearAll() {
+            if (!confirm('🗑️ Tem certeza que deseja limpar tudo?')) return;
+            
+            showToast('Limpo', 'Todos os dados foram removidos', 'info');
+
+            document.getElementById('accounts').value = '';
+            document.getElementById('approvedList').innerHTML = `
+                <div class="empty-state">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                    </svg>
+                    <p>Nenhuma conta aprovada ainda</p>
+                </div>
+            `;
+            document.getElementById('rejectedList').innerHTML = `
+                <div class="empty-state">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"/>
+                    </svg>
+                    <p>Nenhuma conta reprovada ainda</p>
+                </div>
+            `;
+            approved = [];
+            rejected = [];
+            updateStats();
+        }
+    </script>
+</body>
+</html>
