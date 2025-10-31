@@ -35,7 +35,9 @@ def check_account(email, senha):
         options.page_load_strategy = 'eager'  # Não espera página carregar 100%
         
         driver = webdriver.Chrome(options=options)
-        driver.set_page_load_timeout(10)  # Timeout de 10s
+        driver.set_page_load_timeout(30)  # Aumentado para 30s
+        driver.set_script_timeout(30)  # Timeout de scripts
+        driver.implicitly_wait(10)  # Espera implícita
         driver.get("https://www.pichau.com.br/customer/account/login")
         time.sleep(3)  # Reduzido de 7 para 3 segundos
         
